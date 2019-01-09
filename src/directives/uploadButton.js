@@ -12,7 +12,8 @@ angular.module('lr.upload.directives').directive('uploadButton', function(upload
       onUpload: '&',
       onSuccess: '&',
       onError: '&',
-      onComplete: '&'
+      onComplete: '&',
+      disabled: '@'
     },
     link: function(scope, element, attr) {
 
@@ -33,7 +34,8 @@ angular.module('lr.upload.directives').directive('uploadButton', function(upload
           url: scope.url,
           method: scope.method || 'POST',
           forceIFrameUpload: scope.$eval(attr.forceIframeUpload) || false,
-          data: scope.data || {}
+          data: scope.data || {},
+          disabled: scope.disabled || false
         };
 
         options.data[scope.param || 'file'] = fileInput;
@@ -53,6 +55,13 @@ angular.module('lr.upload.directives').directive('uploadButton', function(upload
           }
         );
       });
+
+      if ('disabled' in attr){
+        attr.$observe('disabled', function uploadButtonDisabledObserve(value) {
+          var disabled = value === '' ? true : scope.$eval(value);
+          fileInput.attr('disabled', value);
+        });
+      }
 
       // Add required to file input and ng-invalid-required
       // Since the input is reset when upload is complete, we need to check something in the
